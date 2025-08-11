@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang=pt-BR>
+<head>
+  <meta charset=UTF-8 />
+  <title>Logs</title>
+  <link rel=stylesheet href=../assets/styles/style.css />
+</head>
+<body class=subpage>
+  <div class=page-header>
+    <h2>Logs</h2>
+    <button id=close-logs class=btn menu></button>
+  </div>
+  <div class=content>
+    <div class=sub-panel>
+      <div id=log-container class=log-container>Carregando...</div>
+    </div>
+  </div>
+  <script src=../content/log-sys.js></script>
+  <script>
+    document.getElementById('close-logs').onclick = () => window.close();
+    window.addEventListener('message', (e) => {
+      if (e?.data?.type === 'LOG_MESSAGE') {
+        const c = document.getElementById('log-container');
+        const { message, level, source } = e.data.data || {};
+        const div = document.createElement('div');
+        div.className = log-entry log-;
+        div.textContent = [] : ;
+        c.appendChild(div);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+﻿body { font-family: Arial, sans-serif; margin: 0; }
+.header { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:#eee; }
+.app-title { margin:0; font-size:16px; }
+.container { padding: 12px; }
+.sub-panel { background:#fff; border:1px solid #ddd; border-radius:6px; padding:10px; margin-bottom:10px; }
+.status-processo { padding:8px; border-radius:4px; }
+.status-processo.info { background:#e3f2fd; }
+.status-processo.success { background:#e8f5e9; }
+.status-processo.error { background:#ffebee; }
+.btn, .action-button { padding:8px 10px; border:1px solid #ccc; border-radius:4px; background:#fafafa; cursor:pointer; }
+.panel-content-center { display:flex; gap:8px; flex-wrap:wrap; }
+.log-container { font-family: monospace; background:#111; color:#ddd; padding:10px; height:60vh; overflow:auto; }

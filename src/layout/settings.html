@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang=pt-BR>
+<head>
+  <meta charset=UTF-8 />
+  <title>Configurações</title>
+  <link rel=stylesheet href=../assets/styles/style.css />
+</head>
+<body class=subpage>
+  <div class=page-header>
+    <h2>Configurações</h2>
+    <button id=close-settings class=btn menu></button>
+  </div>
+  <div class=content>
+    <div class=sub-panel>
+      <label>Valor (R$): <input id=trade-value type=number min=1 /></label>
+      <label>Período (min): <input id=trade-time type=number min=0 /></label>
+      <label>Payout mínimo (%): <input id=min-payout type=number min=50 max=100 value=80 /></label>
+      <button id=save-settings class=btn confirm-btn>Salvar</button>
+    </div>
+  </div>
+  <script src=../content/log-sys.js></script>
+  <script src=../content/state-manager.js></script>
+  <script>
+    (async function(){
+      const cfg = await window.StateManager.load();
+      document.getElementById('trade-value').value = cfg.value || 10;
+      document.getElementById('trade-time').value = cfg.period || 0;
+      document.getElementById('min-payout').value = cfg.minPayout || 80;
+      document.getElementById('save-settings').onclick = async () => {
+        await window.StateManager.saveConfig({
+          value: parseFloat(document.getElementById('trade-value').value)||10,
+          period: parseInt(document.getElementById('trade-time').value)||0,
+          minPayout: parseInt(document.getElementById('min-payout').value)||80
+        });
+        sendStatus('Configurações salvas', 'success');
+      };
+      document.getElementById('close-settings').onclick = () => window.close();
+    })();
+  </script>
+</body>
+</html>
