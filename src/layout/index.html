@@ -4,33 +4,44 @@
   <meta charset=UTF-8 />
   <title>Trade Manager Core</title>
   <link rel=stylesheet href=../assets/styles/style.css />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-  <div class=header>
-    <h1 class=app-title>TRADE MANAGER CORE</h1>
-    <div class=header-controls>
-      <button id=settings-btn class=btn menu></button>
-      <button id=logs-btn class=btn menu></button>
+  <div class="header">
+    <h1 class="app-title">TRADE MANAGER CORE</h1>
+    <div class="header-controls">
+      <button id="settings-btn" class="btn menu" aria-label="Configurações"><i class="fas fa-cog"></i></button>
+      <button id="logs-btn" class="btn menu" aria-label="Logs"><i class="fas fa-list"></i></button>
     </div>
   </div>
 
   <div class=container>
-    <div class=sub-panel>
-      <h4>Status</h4>
-      <div id=status-processo class=status-processo info>Pronto</div>
-    </div>
-
-    <div class=sub-panel>
-      <h4>Ferramentas</h4>
-      <div class=panel-content-center>
-        <button id=analyzeBtn class=action-button>Iniciar Análise</button>
-        <button id=captureBtn class=action-button>Capturar Tela</button>
+    <div class="sub-panel">
+      <h4 class="sub-panel-header"><i class="fas fa-tools"></i> Ferramentas</h4>
+      <div class="panel-content-center">
+        <button id="analyzeBtn" class="btn primary md"><i class="fas fa-brain"></i><span>Iniciar Análise</span></button>
+        <button id="captureBtn" class="btn md"><i class="fas fa-camera"></i><span>Capturar Tela</span></button>
       </div>
+    </div>
+    <!-- Overlay de subpáginas (SPA no iframe) -->
+    <div id="tmc-subpage-overlay" class="subpage-overlay" style="display:none">
+      <div class="subpage-shell">
+        <iframe id="tmc-subpage-frame" class="subpage-frame"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer: status e versão -->
+  <div class="app-footer">
+    <div id="status-processo" class="footer-status status-processo info">Pronto</div>
+    <div class="footer-meta">
+      <span>Versão:</span> <strong id="app-version">-</strong>
     </div>
   </div>
 
   <script src=../content/log-sys.js></script>
   <script src=../content/state-manager.js></script>
+  <script src=../content/navigation.js></script>
   <script src=../content/capture-screen.js></script>
   <script src=../content/index.js></script>
 </body>

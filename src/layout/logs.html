@@ -4,30 +4,23 @@
   <meta charset=UTF-8 />
   <title>Logs</title>
   <link rel=stylesheet href=../assets/styles/style.css />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
-<body class=subpage>
-  <div class=page-header>
+<body class="subpage">
+  <div class="page-header">
     <h2>Logs</h2>
-    <button id=close-logs class=btn menu></button>
+    <button id="close-logs" class="btn menu"><i class="fas fa-times"></i></button>
   </div>
-  <div class=content>
-    <div class=sub-panel>
-      <div id=log-container class=log-container>Carregando...</div>
+  <div class="content" style="padding-bottom:56px;">
+    <div class="sub-panel">
+      <h4 class="panel-title"><span class="icon-badge"><i class="fas fa-list"></i></span> Sistema de Logs</h4>
+      <p class="panel-subtitle">Visualização e controle dos registros do sistema</p>
+      <div class="panel-divider"></div>
+      <div id="log-container" class="log-container">Carregando...</div>
     </div>
   </div>
   <script src=../content/log-sys.js></script>
-  <script>
-    document.getElementById('close-logs').onclick = () => window.close();
-    window.addEventListener('message', (e) => {
-      if (e?.data?.type === 'LOG_MESSAGE') {
-        const c = document.getElementById('log-container');
-        const { message, level, source } = e.data.data || {};
-        const div = document.createElement('div');
-        div.className = log-entry log-;
-        div.textContent = [] : ;
-        c.appendChild(div);
-      }
-    });
-  </script>
+  <script src=../content/navigation.js></script>
+  <script src=../content/logs-viewer.js></script>
 </body>
 </html>

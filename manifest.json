@@ -1,42 +1,69 @@
 ﻿{
-   manifest_version: 3,
-  name: Trade Manager Core,
-  version: 1.0.0,
-  description: Core enxuto com UI via iframe logging settings e painel de desenvolvimento.,
-  permissions: [
-    storage, tabs, activeTab, scripting, notifications, offscreen, commands, clipboardWrite
+  "manifest_version": 3,
+  "name": "Trade Manager Core",
+  "version": "0.0.1",
+  "description": "Core enxuto com UI via iframe, logging, settings e painel de desenvolvimento.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "notifications",
+    "offscreen",
+    "commands",
+    "clipboardWrite"
   ],
-  host_permissions: [
-    https://pocketoption.com/*,
-    https://www.pocketoption.com/*,
-    <all_urls>
+  "host_permissions": [
+    "https://pocketoption.com/*",
+    "https://www.pocketoption.com/*",
+    "<all_urls>"
   ],
-  background: { service_worker: src/background/background.js },
-  content_scripts: [
-    {
-      matches: [https://pocketoption.com/*, https://www.pocketoption.com/*],
-      js: [src/content/content.js],
-      css: [src/assets/styles/style.css],
-      all_frames: false
-    }
-  ],
-  web_accessible_resources: [
-    {
-      resources: [
-        src/layout/*,
-        src/content/*,
-        src/assets/*
-      ],
-      matches: [https://pocketoption.com/*, https://www.pocketoption.com/*]
-    }
-  ],
-  action: {
-    default_title: Trade Manager Core
+  "background": {
+    "service_worker": "src/background/background.js"
   },
-  commands: {
-    toggle_interface: {
-      suggested_key: { default: Ctrl+Shift+Y, mac: Command+Shift+Y },
-      description: Mostrar/ocultar a interface
+  "content_scripts": [
+    {
+      "matches": [
+        "https://pocketoption.com/*",
+        "https://www.pocketoption.com/*"
+      ],
+      "js": [
+        "src/content/log-sys.js",
+        "src/content/state-manager.js",
+        "src/content/navigation.js",
+        "src/content/capture-screen.js",
+        "src/content/payout-controller.js",
+        "src/content/asset-manager.js",
+        "src/content/content.js",
+        "src/content/index.js"
+      ],
+      "css": ["src/assets/styles/style.css"],
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/layout/*",
+        "src/content/*",
+        "src/assets/*"
+      ],
+      "matches": [
+        "https://pocketoption.com/*",
+        "https://www.pocketoption.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_title": "Trade Manager Core"
+  },
+  "commands": {
+    "toggle_interface": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Mostrar/ocultar a interface"
     }
   }
 }
