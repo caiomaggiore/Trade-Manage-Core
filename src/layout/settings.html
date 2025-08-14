@@ -1,45 +1,95 @@
 ﻿<!DOCTYPE html>
-<html lang=pt-BR>
+<html lang="pt-BR">
 <head>
-  <meta charset=UTF-8 />
-  <title>Configurações</title>
-  <link rel=stylesheet href=../assets/styles/style.css />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <title>Configurações - Trade Manager Core</title>
+  <link rel="stylesheet" href="../assets/styles/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="subpage">
+<body class="subpage trade-manager-core">
+  <!-- Header da Subpágina -->
   <div class="page-header">
-    <h2>Configurações</h2>
-    <button id="close-settings" class="btn menu"><i class="fas fa-times"></i></button>
+    <h2><i class="fas fa-cog"></i> CONFIGURAÇÕES</h2>
+    <button id="close-settings" class="btn menu" aria-label="Fechar">
+      <i class="fas fa-times"></i>
+    </button>
   </div>
-  <div class="content" style="padding-bottom:56px;">
-    <div class="sub-panel">
-      <h4 class="panel-title"><span class="icon-badge"><i class="fas fa-cogs"></i></span> Parâmetros de Operação</h4>
-      <p class="panel-subtitle">Ajuste os parâmetros básicos de operação</p>
-      <div class="panel-divider"></div>
 
-      <div class="form">
-        <div class="form-row">
-          <label for="trade-value" class="form-label">Valor (R$)</label>
-          <input id="trade-value" class="input" type="number" min="1" />
-        </div>
-        <div class="form-row">
-          <label for="trade-time" class="form-label">Período (min)</label>
-          <input id="trade-time" class="input" type="number" min="0" />
-        </div>
-        <div class="form-row">
-          <label for="min-payout" class="form-label">Payout mínimo (%)</label>
-          <input id="min-payout" class="input" type="number" min="50" max="100" value="80" />
+  <!-- Conteúdo Principal -->
+  <div class="content">
+    <!-- Painel de Parâmetros -->
+    <div class="main-panel">
+      <div class="main-panel-header">
+        <h3><i class="fas fa-cogs"></i> PARÂMETROS DE OPERAÇÃO</h3>
+        <p class="main-panel-description">Configure os parâmetros básicos para as operações de trading</p>
+      </div>
+
+      <!-- Formulário de Configurações -->
+      <div class="sub-panel">
+        <h4 class="sub-panel-header">
+          <i class="fas fa-sliders-h"></i> Configurações Básicas
+        </h4>
+        
+        <div class="form">
+          <div class="form-row">
+            <label for="trade-value" class="form-label">Valor (R$):</label>
+            <input id="trade-value" class="input" type="number" min="1" step="0.01" placeholder="10.00">
+          </div>
+          
+          <div class="form-row">
+            <label for="trade-time" class="form-label">Período (min):</label>
+            <input id="trade-time" class="input" type="number" min="1" max="60" placeholder="5">
+          </div>
+          
+          <div class="form-row">
+            <label for="min-payout" class="form-label">Payout Mínimo (%):</label>
+            <input id="min-payout" class="input" type="number" min="50" max="100" value="80" placeholder="80">
+          </div>
         </div>
 
         <div class="actions-right">
-          <button id="save-settings" class="btn primary md" type="button"><i class="fas fa-save"></i> Salvar</button>
+          <button id="save-settings" class="btn primary md">
+            <i class="fas fa-save"></i>
+            <span>Salvar Configurações</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Painel de Informações -->
+    <div class="main-panel">
+      <div class="main-panel-header">
+        <h3><i class="fas fa-info-circle"></i> INFORMAÇÕES</h3>
+        <p class="main-panel-description">Informações importantes sobre as configurações</p>
+      </div>
+
+      <div class="sub-panel">
+        <div class="panel-item">
+          <span class="panel-item-label">Versão:</span>
+          <div class="panel-item-value">
+            <span id="settings-version">-</span>
+          </div>
+        </div>
+        <div class="panel-item">
+          <span class="panel-item-label">Última Atualização:</span>
+          <div class="panel-item-value">
+            <span id="last-update">Nunca</span>
+          </div>
+        </div>
+        <div class="panel-item">
+          <span class="panel-item-label">Status:</span>
+          <div class="panel-item-value">
+            <span id="config-status" class="status-info">Configurado</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <script src=../content/log-sys.js></script>
-  <script src=../content/state-manager.js></script>
-  <script src=../content/navigation.js></script>
-  <script src=../content/settings.js></script>
+
+  <!-- Scripts -->
+  <script src="../content/log-sys.js"></script>
+  <script src="../content/state-manager.js"></script>
+  <script src="../content/navigation.js"></script>
+  <script src="../content/settings.js"></script>
 </body>
 </html>

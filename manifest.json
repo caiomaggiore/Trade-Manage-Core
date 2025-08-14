@@ -1,7 +1,7 @@
 ﻿{
   "manifest_version": 3,
   "name": "Trade Manager Core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Core enxuto com UI via iframe, logging, settings e painel de desenvolvimento.",
   "permissions": [
     "storage",
@@ -32,6 +32,7 @@
         "src/content/state-manager.js",
         "src/content/navigation.js",
         "src/content/capture-screen.js",
+        "src/content/pocket-option-dom.js",
         "src/content/payout-controller.js",
         "src/content/asset-manager.js",
         "src/content/content.js",

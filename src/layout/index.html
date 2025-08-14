@@ -1,48 +1,101 @@
 ﻿<!DOCTYPE html>
-<html lang=pt-BR>
+<html lang="pt-BR">
 <head>
-  <meta charset=UTF-8 />
+  <meta charset="UTF-8">
   <title>Trade Manager Core</title>
-  <link rel=stylesheet href=../assets/styles/style.css />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/styles/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="trade-manager-core">
+  <!-- Header Principal -->
   <div class="header">
     <h1 class="app-title">TRADE MANAGER CORE</h1>
     <div class="header-controls">
-      <button id="settings-btn" class="btn menu" aria-label="Configurações"><i class="fas fa-cog"></i></button>
-      <button id="logs-btn" class="btn menu" aria-label="Logs"><i class="fas fa-list"></i></button>
+      <button id="settings-btn" class="btn menu" aria-label="Configurações">
+        <i class="fas fa-cog"></i>
+      </button>
+      <button id="logs-btn" class="btn menu" aria-label="Logs">
+        <i class="fas fa-list"></i>
+      </button>
     </div>
   </div>
 
-  <div class=container>
-    <div class="sub-panel">
-      <h4 class="sub-panel-header"><i class="fas fa-tools"></i> Ferramentas</h4>
-      <div class="panel-content-center">
-        <button id="analyzeBtn" class="btn primary md"><i class="fas fa-brain"></i><span>Iniciar Análise</span></button>
-        <button id="captureBtn" class="btn md"><i class="fas fa-camera"></i><span>Capturar Tela</span></button>
+  <!-- Container Principal -->
+  <div class="container">
+    <!-- Painel Principal - Dashboard -->
+    <div class="main-panel">
+      <div class="main-panel-header">
+        <h3><i class="fas fa-tachometer-alt"></i> PAINEL DE DESENVOLVIMENTO</h3>
+        <p class="main-panel-description">Ferramentas de desenvolvimento e testes do Trade Manager Core</p>
+      </div>
+
+      <!-- Seção de Ferramentas -->
+      <div class="sub-panel">
+        <h4 class="sub-panel-header">
+          <i class="fas fa-tools"></i> Ferramentas Principais
+        </h4>
+        <div class="panel-grid-2">
+          <button id="analyzeBtn" class="btn primary md">
+            <i class="fas fa-brain"></i>
+            <span>Iniciar Análise</span>
+          </button>
+          <button id="captureBtn" class="btn secondary md">
+            <i class="fas fa-camera"></i>
+            <span>Capturar Tela</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Seção de Teste de Payout -->
+      <div class="sub-panel">
+        <h4 class="sub-panel-header">
+          <i class="fas fa-percentage"></i> Teste de Payout
+        </h4>
+        <div class="panel-content-center">
+          <button id="testPayoutBtn" class="btn primary md">
+            <i class="fas fa-percent"></i>
+            <span>Testar Captura de Payout</span>
+          </button>
+        </div>
+        <div class="panel-item">
+          <span class="panel-item-label">Resultado:</span>
+          <div class="panel-item-value">
+            <span id="payoutResult">Nenhum teste realizado</span>
+          </div>
+        </div>
+        <div class="panel-item">
+          <span class="panel-item-label">Status:</span>
+          <div class="panel-item-value">
+            <span id="devStatus">Pronto para teste</span>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- Overlay de subpáginas (SPA no iframe) -->
-    <div id="tmc-subpage-overlay" class="subpage-overlay" style="display:none">
-      <div class="subpage-shell">
-        <iframe id="tmc-subpage-frame" class="subpage-frame"></iframe>
+
+    <!-- Overlay de Subpáginas (SPA Slide Lateral) -->
+    <div id="tmc-subpage-overlay" class="subpage-overlay">
+      <div id="tmc-subpage-content" class="subpage-shell">
+        <!-- Conteúdo das subpáginas será carregado aqui dinamicamente -->
       </div>
     </div>
   </div>
 
-  <!-- Footer: status e versão -->
+  <!-- Footer Global -->
   <div class="app-footer">
-    <div id="status-processo" class="footer-status status-processo info">Pronto</div>
+    <div id="status-processo" class="footer-status info visible">
+      <i class="fas fa-check-circle status-icon"></i>
+      <span class="status-text">Sistema Pronto</span>
+    </div>
     <div class="footer-meta">
-      <span>Versão:</span> <strong id="app-version">-</strong>
+      <span>Trade Manager Core</span> • <span>v</span><strong id="app-version">-</strong>
     </div>
   </div>
 
-  <script src=../content/log-sys.js></script>
-  <script src=../content/state-manager.js></script>
-  <script src=../content/navigation.js></script>
-  <script src=../content/capture-screen.js></script>
-  <script src=../content/index.js></script>
+  <!-- Scripts -->
+  <script src="../content/log-sys.js"></script>
+  <script src="../content/state-manager.js"></script>
+  <script src="../content/navigation.js"></script>
+  <script src="../content/capture-screen.js"></script>
+  <script src="../content/index.js"></script>
 </body>
 </html>

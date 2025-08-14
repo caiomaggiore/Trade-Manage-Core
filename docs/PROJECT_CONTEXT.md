@@ -62,3 +62,4 @@ Criar um core enxuto (MV3) com UI via iframe, logging/status, settings e um pain
 1) Implementar `src/content/payout-controller.js` e expor mensagens: `GET_CURRENT_PAYOUT`.
 2) Implementar `src/content/asset-manager.js` e expor mensagens: `LIST_ASSETS`, `SWITCH_ASSET`, `SWITCH_BEST_ASSET`.
 3) Adicionar botões e binds no Painel Dev para acionar as funções acima.
+

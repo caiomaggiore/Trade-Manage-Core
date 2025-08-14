@@ -1,19 +1,57 @@
 // Asset Manager (content-script): lista e troca ativos no DOM
 (function(){
   function queryAssetNodes(){
-    // Ajustar seletores conforme Pocket Option; placeholders genéricos
-    const buttons = document.querySelectorAll('[data-asset], [class*="asset" i], button');
-    return Array.from(buttons);
+    // Usa o detector específico da Pocket Option se disponível
+    if (window.PocketOptionDOM) {
+      const result = window.PocketOptionDOM.AssetModal.listAssets();
+      if (result.success) {
+        return result.assets.map(name => ({ 
+          textContent: name, 
+          getAttribute: () => name 
+        }));
+      }
+    }
+
+    // Fallback: seletores baseados no projeto original
+    const selectors = [
+      '.iq-option-dropdown-options .option',
+      '.asset-list .asset-item',
+      '.symbols-list .symbol',
+      '[data-asset]',
+      '[class*="asset" i]'
+    ];
+    
+    const buttons = [];
+    for (const selector of selectors) {
+      const elements = document.querySelectorAll(selector);
+      buttons.push(...Array.from(elements));
+    }
+    
+    return buttons;
   }
 
   function listAssets(){
+    // Usa o detector específico da Pocket Option se disponível
+    if (window.PocketOptionDOM) {
+      const result = window.PocketOptionDOM.AssetModal.listAssets();
+      if (result.success) {
+        return { success: true, assets: result.assets, count: result.count };
+      }
+    }
+
+    // Fallback: método original melhorado
     const nodes = queryAssetNodes();
     const assets = [];
     for (const n of nodes){
-      const name = n.getAttribute('data-asset') || n.textContent?.trim() || '';
-      if (name && !assets.includes(name)) assets.push(name);
+      const name = n.getAttribute('data-asset') || 
+                  n.getAttribute('data-symbol') ||
+                  n.textContent?.trim() || '';
+      if (name && name.length > 1 && !assets.includes(name)) {
+        assets.push(name);
+      }
     }
-    return { success: true, assets };
+    
+    return { success: true, assets, count: assets.length };
   }
 
   async function switchTo(asset){

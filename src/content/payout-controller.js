@@ -9,32 +9,86 @@
     return parseFloat(`${int}.${dec}`);
   }
 
-  function findPayoutElement(){
-    // Estratégia: procurar elementos com classe/atributo contendo "payout" ou textos com "%"
+  async function findPayoutElement(){
+    try {
+      // Chama a função de captura do content.js
+      const response = await chrome.runtime.sendMessage({ action: 'CAPTURE_PAYOUT_FROM_DOM' });
+      
+      if (response && response.success) {
+        window.postMessage({ 
+          type: 'LOG_MESSAGE', 
+          data: { 
+            message: `Payout capturado via content.js: ${response.payout}% (${response.selector})`, 
+            level: 'SUCCESS', 
+            source: 'payout-controller' 
+          } 
+        }, '*');
+        
+        return { node: response.element, value: response.payout };
+      } else {
+        window.postMessage({ 
+          type: 'LOG_MESSAGE', 
+          data: { 
+            message: `Falha na captura via content.js: ${response?.error || 'Erro desconhecido'}`, 
+            level: 'WARN', 
+            source: 'payout-controller' 
+          } 
+        }, '*');
+        
+        // Fallback: estratégia local melhorada
+        return findPayoutElementLocal();
+      }
+    } catch (error) {
+      window.postMessage({ 
+        type: 'LOG_MESSAGE', 
+        data: { 
+          message: `Erro na comunicação com content.js: ${error.message}`, 
+          level: 'ERROR', 
+          source: 'payout-controller' 
+        } 
+      }, '*');
+      
+      // Fallback em caso de erro
+      return findPayoutElementLocal();
+    }
+  }
+
+  function findPayoutElementLocal(){
+    // Fallback local quando content.js não consegue capturar
     const candidates = [
       '[data-testid*="payout" i]',
       '[class*="payout" i]',
-      '[id*="payout" i]'
+      '[id*="payout" i]',
+      '[class*="profit" i]',
+      '.option-profit .profit-percent',
+      '.payout .percent-value'
     ];
+    
     for (const selector of candidates){
       const nodes = document.querySelectorAll(selector);
       for (const node of nodes){
         const value = parsePercentage(node.textContent || node.getAttribute('title') || '');
-        if (value != null) return { node, value };
+        if (value != null && value > 50 && value < 200) {
+          return { node, value };
+        }
       }
     }
-    // Varredura leve por spans/divs com %
+    
+    // Varredura leve por spans/divs com % - validação de range
     const spans = document.querySelectorAll('span,div');
     for (const el of spans){
       const value = parsePercentage(el.textContent);
-      if (value != null) return { node: el, value };
+      if (value != null && value > 50 && value < 200) {
+        return { node: el, value };
+      }
     }
+    
     return null;
   }
 
   async function getCurrentPayout(){
     try {
-      const found = findPayoutElement();
+      const found = await findPayoutElement();
       if (!found) {
         window.postMessage({ type: 'LOG_MESSAGE', data: { message: 'Payout não encontrado no DOM', level: 'WARN', source: 'payout-controller' } }, '*');
         return { success: false, error: 'PAYOUT_NOT_FOUND' };
