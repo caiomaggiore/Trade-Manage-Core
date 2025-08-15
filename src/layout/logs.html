@@ -17,11 +17,53 @@
 
   <!-- Conteúdo Principal -->
   <div class="content">
-    <!-- Painel Principal de Logs -->
+    <!-- Painel de Estatísticas de Logs -->
     <div class="main-panel">
       <div class="main-panel-header">
+        <h3><i class="fas fa-chart-bar"></i> ESTATÍSTICAS DE LOGS</h3>
+        <p class="main-panel-description">Informações sobre os logs capturados pelo sistema</p>
+      </div>
+
+      <div class="sub-panel">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-list-ul"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total de Logs</span>
+              <span class="stat-value" id="total-logs">0</span>
+            </div>
+          </div>
+          
+          <div class="stat-card error">
+            <div class="stat-icon">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Erros</span>
+              <span class="stat-value" id="error-count">0</span>
+            </div>
+          </div>
+          
+          <div class="stat-card success">
+            <div class="stat-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Sucessos</span>
+              <span class="stat-value" id="success-count">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Painel Principal de Logs -->
+    <div class="main-panel" style="margin-bottom: 100px;">
+      <div class="main-panel-header">
         <h3><i class="fas fa-terminal"></i> SISTEMA DE LOGS</h3>
-        <p class="main-panel-description">Visualização e controle dos registros do sistema em tempo real</p>
+        <p class="main-panel-description">Central de debug e monitoramento do sistema</p>
       </div>
 
       <!-- Controles de Filtro -->
@@ -43,17 +85,6 @@
             </select>
           </div>
         </div>
-
-        <div class="actions-right">
-          <button id="clear-logs" class="btn secondary md">
-            <i class="fas fa-trash"></i>
-            <span>Limpar Logs</span>
-          </button>
-          <button id="export-logs" class="btn primary md">
-            <i class="fas fa-download"></i>
-            <span>Exportar</span>
-          </button>
-        </div>
       </div>
 
       <!-- Container de Logs -->
@@ -67,36 +98,17 @@
             Carregando logs do sistema...
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Painel de Estatísticas -->
-    <div class="main-panel">
-      <div class="main-panel-header">
-        <h3><i class="fas fa-chart-bar"></i> ESTATÍSTICAS</h3>
-        <p class="main-panel-description">Informações sobre os logs capturados</p>
-      </div>
-
-      <div class="sub-panel">
-        <div class="panel-grid-3">
-          <div class="panel-item">
-            <span class="panel-item-label">Total de Logs:</span>
-            <div class="panel-item-value">
-              <span id="total-logs">0</span>
-            </div>
-          </div>
-          <div class="panel-item">
-            <span class="panel-item-label">Erros:</span>
-            <div class="panel-item-value">
-              <span id="error-count" class="status-error">0</span>
-            </div>
-          </div>
-          <div class="panel-item">
-            <span class="panel-item-label">Sucessos:</span>
-            <div class="panel-item-value">
-              <span id="success-count" class="status-success">0</span>
-            </div>
-          </div>
+        <!-- Ações dos Logs -->
+        <div class="actions-right" style="margin-top: 12px;">
+          <button id="clear-logs" class="btn secondary md">
+            <i class="fas fa-trash"></i>
+            <span>Limpar Logs</span>
+          </button>
+          <button id="export-logs" class="btn primary md">
+            <i class="fas fa-download"></i>
+            <span>Exportar</span>
+          </button>
         </div>
       </div>
     </div>

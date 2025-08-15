@@ -75,13 +75,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   - `log-sys.js`: recebe e processa `LOG_MESSAGE`.
   - `index.js`: recebe e processa `UPDATE_STATUS`.
 
+**POLÍTICA DE LOGS CENTRALIZADOS:**
+- **OBRIGATÓRIO:** Todos os arquivos do projeto devem enviar logs para o sistema centralizado (página de logs), NÃO para `console.log`.
+- **Função:** Use `logToSystem(message, level, source)` disponível globalmente em todos os arquivos.
+- **Níveis:** 'DEBUG', 'INFO', 'SUCCESS', 'WARNING', 'ERROR'
+- **Fontes:** Identificar arquivo/módulo (ex: 'SYSTEM', 'NAVIGATION', 'SETTINGS', 'CONTENT', 'BACKGROUND')
+- **Formato de exibição:** `[timestamp] [ícone] [TIPO] [FONTE] mensagem`
+- **Visual:** Fundo cinza claro, texto preto, ícones coloridos por tipo, alinhamento à esquerda, linhas separadoras
+
 Formato das mensagens:
 
 ```javascript
-// Log
-window.postMessage({ type: 'LOG_MESSAGE', data: { message, level: 'INFO', source: 'CORE' } }, '*');
+// Log (USAR SEMPRE ESTA FUNÇÃO)
+logToSystem('Sistema inicializado', 'SUCCESS', 'SYSTEM');
+logToSystem('Erro ao carregar configuração', 'ERROR', 'SETTINGS');
 
-// Status
+// Status no footer
 window.postMessage({ type: 'UPDATE_STATUS', data: { message, type: 'success', duration: 3000 } }, '*');
 ```
 
@@ -196,9 +205,12 @@ Esta seção consolida os padrões de UI/UX utilizados no Core, alinhados ao pro
   - Família única: `Montserrat` para títulos e corpo (import local ou via Google Fonts).
   - Títulos de páginas e categorias em UPPERCASE.
 
-- Ícones
+- Ícones e Emojis
   - Sempre usar Font Awesome Classic (ícones sem borda e sem background), coerentes com o significado semântico do elemento.
-  - Evitar emojis. Em produção MV3, preferir empacotar localmente os assets do FA (CSS/woff) para respeitar CSP. Durante desenvolvimento, pode-se referenciar o CDN, mas o alvo é local.
+  - **Status e Feedback:** Usar apenas ícones Font Awesome para estados (sucesso, erro, warning, info). Não duplicar com emojis redundantes (❌ ✅).
+  - **Emojis Contextuais:** Permitidos apenas quando agregam valor semântico único (🧠 para análise inteligente, 📊 para dados específicos).
+  - **Regra de Redundância:** Se o ícone Font Awesome já comunica o estado, não adicionar emoji equivalente.
+  - Em produção MV3, preferir empacotar localmente os assets do FA (CSS/woff) para respeitar CSP. Durante desenvolvimento, pode-se referenciar o CDN, mas o alvo é local.
 
 - Cabeçalho (Header)
   - Altura mínima: 56px, sticky no topo.
@@ -220,6 +232,10 @@ Esta seção consolida os padrões de UI/UX utilizados no Core, alinhados ao pro
 
 - Status (pill)
   - Cores suaves para `info`, `success` e `error`; texto curto e objetivo.
+  - **Layout:** Status ocupa toda largura do footer com `white-space: nowrap` e `text-overflow: ellipsis`.
+  - **Inicialização:** "Sistema Pronto" aparece apenas quando a plataforma estiver completamente carregada, com log de timestamp.
+  - **Mensagens:** Limitadas a uma linha, sem emojis redundantes aos ícones Font Awesome.
+  - **Auto-reset:** Retorna ao estado padrão após duração configurada, exceto "Sistema Pronto" (permanente).
 
 - Botões
   - Classes padronizadas: `.btn` com tamanhos `.sm | .md | .lg`, variantes `.primary` e `.secondary`.

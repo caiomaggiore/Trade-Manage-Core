@@ -50,13 +50,32 @@
     }
   });
 
-  // Bind de botões básicos
-  document.addEventListener('DOMContentLoaded', () => {
+  // Sistema de inicialização
+  function initializeSystem() {
     // Exibe versão do manifest no footer
     try {
       const vEl = versionEl();
       if (vEl) vEl.textContent = chrome.runtime.getManifest?.().version || '-';
     } catch(_) {}
+    
+    // Simula carregamento do sistema e mostra "Sistema Pronto" quando tudo estiver carregado
+    setTimeout(() => {
+      const currentTime = new Date().toLocaleString('pt-BR');
+      logToSystem(`Sistema inicializado com sucesso em ${currentTime}`, 'SUCCESS', 'SYSTEM');
+      updateFooterStatus('Sistema Pronto', 'success', 0, 'fas fa-check-circle');
+    }, 1500); // 1.5s para simular carregamento
+  }
+
+  // Bind de botões básicos
+  document.addEventListener('DOMContentLoaded', () => {
+    // Mostra status inicial imediatamente
+    const footerStatus = document.querySelector('.footer-status');
+    if (footerStatus) {
+      footerStatus.classList.add('visible');
+    }
+    
+    // Inicializa o sistema
+    initializeSystem();
     const btnCapture = document.getElementById('captureBtn');
     const btnAnalyze = document.getElementById('analyzeBtn');
     const btnSettings = document.getElementById('settings-btn');
@@ -65,7 +84,7 @@
       try {
         sendStatus('Capturando tela...', 'info', 0, 'fas fa-camera', true);
         const img = await window.CaptureScreen.capture();
-        sendStatus('✅ Captura concluída com sucesso!', 'success', 3000, 'fas fa-check-circle');
+        sendStatus('Captura concluída com sucesso!', 'success', 3000, 'fas fa-check-circle');
         
         const popup = window.open('', '_blank', 'width=720,height=520');
         if (popup && popup.document) {
@@ -85,14 +104,14 @@
           popup.document.body.appendChild(image);
         }
       } catch (e) { 
-        sendStatus(`❌ Erro na captura: ${e.message}`, 'error', 5000, 'fas fa-exclamation-circle'); 
+        sendStatus(`Erro na captura: ${e.message}`, 'error', 5000, 'fas fa-exclamation-circle'); 
       }
     });
     if (btnAnalyze) btnAnalyze.addEventListener('click', async () => {
       sendStatus('🧠 Iniciando análise inteligente...', 'info', 0, 'fas fa-brain', true);
       // Placeholder para orquestração futura
       setTimeout(() => {
-        sendStatus('✅ Análise concluída com sucesso!', 'success', 3000, 'fas fa-check-circle');
+        sendStatus('Análise concluída com sucesso!', 'success', 3000, 'fas fa-check-circle');
       }, 2000);
     });
 
@@ -122,7 +141,7 @@
       try {
         updateDevStatus('Iniciando captura...', 'info');
         updatePayoutResult('Buscando...', 'info');
-        sendStatus('📊 Testando captura de payout...', 'info', 0, 'fas fa-percentage', true);
+        sendStatus('Testando captura de payout...', 'info', 0, 'fas fa-percentage', true);
         logToSystem('=== INÍCIO DO TESTE DE PAYOUT ===', 'INFO', 'PAYOUT-TEST');
         
         // Chama a função específica do content.js
@@ -132,12 +151,12 @@
           const payout = response.payout;
           updatePayoutResult(`${payout}%`, 'success');
           updateDevStatus(`Sucesso! Payout: ${payout}%`, 'success');
-          sendStatus(`✅ Payout capturado: ${payout}%`, 'success', 4000, 'fas fa-check-circle');
+          sendStatus(`Payout capturado: ${payout}%`, 'success', 4000, 'fas fa-check-circle');
           logToSystem(`Payout capturado com sucesso: ${payout}% via ${response.selector}`, 'SUCCESS', 'PAYOUT-TEST');
         } else {
           updatePayoutResult('Não encontrado', 'error');
           updateDevStatus(`Falha: ${response?.error || 'Erro desconhecido'}`, 'error');
-          sendStatus(`❌ Erro: ${response?.error || 'Payout não encontrado'}`, 'error', 5000, 'fas fa-exclamation-circle');
+          sendStatus(`Erro: ${response?.error || 'Payout não encontrado'}`, 'error', 5000, 'fas fa-exclamation-circle');
           logToSystem(`Falha na captura: ${response?.error}`, 'ERROR', 'PAYOUT-TEST');
         }
         
@@ -145,7 +164,7 @@
       } catch (e) {
         updatePayoutResult('Erro', 'error');
         updateDevStatus('Erro na comunicação', 'error');
-        sendStatus(`❌ Erro na comunicação: ${e.message}`, 'error', 5000, 'fas fa-exclamation-circle');
+        sendStatus(`Erro na comunicação: ${e.message}`, 'error', 5000, 'fas fa-exclamation-circle');
         logToSystem(`Erro na comunicação: ${e.message}`, 'ERROR', 'PAYOUT-TEST');
       }
     });

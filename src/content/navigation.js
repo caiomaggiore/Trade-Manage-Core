@@ -64,7 +64,7 @@
                         path.includes('logs') ? 'fas fa-list' : 'fas fa-file';
         
         logToSystem(`Navegando para: ${pageName}`, 'INFO', 'NAVIGATION');
-        sendStatus(`📱 Carregando ${pageName}...`, 'info', 2000, pageIcon);
+        sendStatus(`Carregando ${pageName}...`, 'info', 2000, pageIcon);
       }
     },
 
@@ -82,7 +82,7 @@
         }, 300); // Aguarda animação completar
         
         logToSystem('Fechando subpágina', 'INFO', 'NAVIGATION');
-        sendStatus('🏠 Voltando ao painel principal...', 'info', 1500, 'fas fa-home');
+        sendStatus('Voltando ao painel principal...', 'info', 1500, 'fas fa-home');
       }
     },
 
