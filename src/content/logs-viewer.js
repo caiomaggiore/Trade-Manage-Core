@@ -1,7 +1,7 @@
-// Lógica da página de Logs - Central de Debug do Sistema
+// Lógica da página de Logs - Central de Debug do Sistema (Integrado com LogSystem)
 (function(){
-  let logs = [];
   let currentFilter = 'ALL';
+  let logSystemListener = null;
 
   // Elementos da UI
   const closeBtn = document.getElementById('close-logs');
@@ -13,7 +13,11 @@
   // Elementos de estatísticas
   const totalLogsEl = document.getElementById('total-logs');
   const errorCountEl = document.getElementById('error-count');
+  const warningCountEl = document.getElementById('warning-count');
   const successCountEl = document.getElementById('success-count');
+  
+  // Elemento do contador de filtro
+  const filterCountEl = document.getElementById('filter-count');
 
   // Mapeamento de ícones por tipo de log
   const logIcons = {
@@ -24,25 +28,24 @@
     'ERROR': 'fas fa-exclamation-circle'
   };
 
-  // Função para formatar timestamp
-  function formatTimestamp(timestamp = Date.now()) {
-    const date = new Date(timestamp);
-    return date.toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
+  // Função para obter timestamp (usando timestampFormatted do legado)
+  function getDisplayTimestamp(logEntry) {
+    // Usar timestampFormatted como no sistema legado
+    return logEntry.timestampFormatted || logEntry.timestamp || 'N/A';
   }
 
   // Função para criar entrada de log com header e quebra de linha
-  function createLogEntry(level, source, message, timestamp = Date.now()) {
+  function createLogEntry(level, source, message, logData = null) {
     const entry = document.createElement('div');
     entry.className = 'log-entry';
     
     const icon = logIcons[level] || logIcons['INFO'];
+    
+    // Usar o timestamp que já vem formatado
+    let displayTime = 'N/A';
+    if (logData && typeof logData === 'object') {
+      displayTime = getDisplayTimestamp(logData);
+    }
     
     // Estrutura: header (ícone + timestamp + badges) + mensagem em linha separada
     entry.innerHTML = `
@@ -50,7 +53,7 @@
         <div class="log-icon ${level}">
           <i class="${icon}"></i>
         </div>
-        <div class="log-timestamp">${formatTimestamp(timestamp)}</div>
+        <div class="log-timestamp">${displayTime}</div>
         <div class="log-type ${level}">${level}</div>
         <div class="log-source">${source}</div>
       </div>
@@ -60,60 +63,66 @@
     return entry;
   }
 
-  // Função para adicionar log ao sistema
-  function addLog(level, source, message, timestamp = Date.now()) {
-    if (!container) return;
-    
-    const logData = { level, source, message, timestamp };
-    logs.push(logData);
-    
-    // Se for o primeiro log, limpar o placeholder
-    if (logs.length === 1) {
-      container.innerHTML = '';
+  // Função para conectar ao LogSystem
+  function connectToLogSystem() {
+    if (!window.LogSystem || !window.LogSystem.initialized) {
+      console.log('⏳ Aguardando LogSystem...');
+      setTimeout(connectToLogSystem, 100);
+      return;
     }
+
+    console.log('🔗 Conectando ao LogSystem...');
     
-    // Adicionar visualmente se passar pelo filtro
-    if (currentFilter === 'ALL' || currentFilter === level) {
-      const entry = createLogEntry(level, source, message, timestamp);
-      container.appendChild(entry);
-      container.scrollTop = container.scrollHeight;
+    // Carregar logs existentes imediatamente
+    const existingLogs = window.LogSystem.getLogs();
+    console.log(`📋 Logs encontrados no sistema: ${existingLogs?.length || 0}`);
+    
+    if (existingLogs && existingLogs.length > 0) {
+      displayLogs(existingLogs);
+    } else {
+      console.log('📋 Nenhum log encontrado - mostrando placeholder');
+      displayLogs([]); // Força exibição do placeholder
     }
-    
-    updateStatistics();
+
+    // Registrar listener para novos logs
+    logSystemListener = window.LogSystem.addListener((event) => {
+      if (event && event.type === 'LOGS_RELOADED') {
+        displayLogs(event.logs);
+      } else {
+        // Novo log individual
+        addLogToUI(event);
+      }
+      updateStatisticsFromLogSystem();
+    });
+
+    updateStatisticsFromLogSystem();
+    console.log('✅ LogSystem conectado com sucesso');
   }
 
-  // Função para atualizar estatísticas
-  function updateStatistics() {
-    const total = logs.length;
-    const errors = logs.filter(log => log.level === 'ERROR').length;
-    const successes = logs.filter(log => log.level === 'SUCCESS').length;
-    
-    if (totalLogsEl) totalLogsEl.textContent = total;
-    if (errorCountEl) errorCountEl.textContent = errors;
-    if (successCountEl) successCountEl.textContent = successes;
-  }
-
-  // Função para filtrar logs
-  function filterLogs() {
+  // Função para exibir logs da memória
+  function displayLogs(logs) {
     if (!container) return;
     
-    // Limpar container
     container.innerHTML = '';
     
     if (logs.length === 0) {
       container.innerHTML = `
         <div style="color: #64748b; text-align: center; padding: 20px; font-style: italic;">
-          Nenhum log capturado ainda
+          Sistema de logs inicializado - aguardando registros
         </div>
       `;
       return;
     }
-    
-    // Filtrar e exibir logs
+
     const filteredLogs = currentFilter === 'ALL' 
       ? logs 
-      : logs.filter(log => log.level === currentFilter);
-    
+      : logs.filter(log => {
+          // Mapear WARN para WARNING para compatibilidade
+          const normalizedCurrentFilter = currentFilter === 'WARN' ? 'WARNING' : currentFilter;
+          const logLevel = log.level === 'WARN' ? 'WARNING' : log.level;
+          return logLevel === normalizedCurrentFilter;
+        });
+
     if (filteredLogs.length === 0) {
       container.innerHTML = `
         <div style="color: #64748b; text-align: center; padding: 20px; font-style: italic;">
@@ -122,61 +131,143 @@
       `;
       return;
     }
-    
+
     filteredLogs.forEach(log => {
-      const entry = createLogEntry(log.level, log.source, log.message, log.timestamp);
+      const entry = createLogEntry(log.level, log.source, log.message, log);
       container.appendChild(entry);
     });
     
     container.scrollTop = container.scrollHeight;
   }
 
-  // Função para limpar logs
-  function clearLogs() {
-    logs = [];
-    if (container) {
-      container.innerHTML = `
-        <div style="color: #64748b; text-align: center; padding: 20px; font-style: italic;">
-          Logs limpos - aguardando novos registros
-        </div>
-      `;
-    }
-    updateStatistics();
+  // Função para adicionar log individual à UI
+  function addLogToUI(logEntry) {
+    if (!container) return;
     
-    // Log da ação
-    setTimeout(() => {
-      addLog('INFO', 'LOGS', 'Sistema de logs limpo pelo usuário');
-    }, 100);
+    // Se há placeholder, remover
+    const placeholder = container.querySelector('div[style*="text-align: center"]');
+    if (placeholder) {
+      container.innerHTML = '';
+    }
+    
+    // Adicionar visualmente se passar pelo filtro
+    if (currentFilter === 'ALL' || currentFilter === logEntry.level) {
+      const entry = createLogEntry(logEntry.level, logEntry.source, logEntry.message, logEntry);
+      container.appendChild(entry);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    updateStatisticsFromLogSystem();
   }
 
-  // Função para exportar logs
+  // Função para atualizar estatísticas do LogSystem
+  function updateStatisticsFromLogSystem() {
+    if (!window.LogSystem) return;
+    
+    const stats = window.LogSystem.getStats();
+    
+    if (totalLogsEl) totalLogsEl.textContent = stats.total;
+    if (errorCountEl) errorCountEl.textContent = stats.byLevel.ERROR || 0;
+    if (warningCountEl) warningCountEl.textContent = stats.byLevel.WARNING || stats.byLevel.WARN || 0;
+    if (successCountEl) successCountEl.textContent = stats.byLevel.SUCCESS || 0;
+    
+    // Atualizar contador do filtro
+    updateFilterCount();
+  }
+
+  // Função para atualizar contador do filtro
+  function updateFilterCount() {
+    if (!filterSelect || !filterCountEl || !window.LogSystem) return;
+    
+    const selectedLevel = filterSelect.value;
+    const allLogs = window.LogSystem.getLogs();
+    
+    let filteredCount = 0;
+    
+    if (selectedLevel === 'ALL') {
+      filteredCount = allLogs.length;
+    } else {
+      // Mapear WARN para WARNING para compatibilidade
+      const normalizedLevel = selectedLevel === 'WARN' ? 'WARNING' : selectedLevel;
+      filteredCount = allLogs.filter(log => {
+        const logLevel = log.level === 'WARN' ? 'WARNING' : log.level;
+        return logLevel === normalizedLevel;
+      }).length;
+    }
+    
+    filterCountEl.textContent = `${filteredCount} logs`;
+  }
+
+  // Função para filtrar logs
+  function filterLogs() {
+    if (!window.LogSystem) return;
+    
+    const allLogs = window.LogSystem.getLogs();
+    displayLogs(allLogs);
+    updateFilterCount();
+  }
+
+  // Função para limpar logs - ação crítica do usuário
+  async function clearLogs() {
+    if (!window.LogSystem) {
+      window.logToSystem?.('Tentativa de limpeza falhou - LogSystem não disponível', 'ERROR', 'LOGS-VIEWER');
+      return;
+    }
+    
+    window.logToSystem?.('Usuário solicitou limpeza de todos os logs', 'WARN', 'LOGS-VIEWER');
+    
+    const count = await window.LogSystem.clearLogs();
+    updateStatisticsFromLogSystem();
+    
+    window.logToSystem?.(`${count} logs removidos pelo usuário`, 'INFO', 'LOGS-VIEWER');
+  }
+
+  // Função para exportar logs - ação do usuário
   function exportLogs() {
-    if (logs.length === 0) {
+    if (!window.LogSystem) {
+      window.logToSystem?.('Tentativa de exportação falhou - LogSystem não disponível', 'ERROR', 'LOGS-VIEWER');
+      alert('Sistema de logs não disponível');
+      return;
+    }
+    
+    const allLogs = window.LogSystem.getLogs();
+    if (allLogs.length === 0) {
+      window.logToSystem?.('Tentativa de exportação cancelada - nenhum log disponível', 'WARN', 'LOGS-VIEWER');
       alert('Nenhum log para exportar');
       return;
     }
     
-    const exportData = logs.map(log => 
-      `${formatTimestamp(log.timestamp)} | ${log.level} | ${log.source} | ${log.message}`
-    ).join('\n');
-    
-    const blob = new Blob([exportData], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `trade-manager-logs-${new Date().toISOString().slice(0, 10)}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    addLog('SUCCESS', 'LOGS', `Logs exportados com sucesso (${logs.length} registros)`);
+    try {
+      window.logToSystem?.('Usuário solicitou exportação de logs', 'INFO', 'LOGS-VIEWER');
+      
+      const { content, filename } = window.LogSystem.exportLogs('txt');
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      window.logToSystem?.(`Logs exportados com sucesso: ${filename} (${allLogs.length} registros)`, 'SUCCESS', 'LOGS-VIEWER');
+    } catch (error) {
+      window.logToSystem?.(`Erro na exportação de logs: ${error.message}`, 'ERROR', 'LOGS-VIEWER');
+    }
   }
 
   // Event Listeners
   if (closeBtn) {
     closeBtn.onclick = () => {
-      addLog('INFO', 'LOGS', 'Página de logs fechada');
+      if (window.LogSystem) {
+        window.LogSystem.addLog('Página de logs fechada', 'INFO', 'LOGS');
+      }
+      // Remover listener ao fechar
+      if (logSystemListener) {
+        logSystemListener();
+      }
       window.parent?.postMessage({ type: 'NAV_CLOSE_SUBPAGE' }, '*');
     };
   }
@@ -185,14 +276,14 @@
     filterSelect.addEventListener('change', (e) => {
       currentFilter = e.target.value;
       filterLogs();
-      addLog('INFO', 'LOGS', `Filtro alterado para: ${currentFilter}`);
+      updateFilterCount();
     });
   }
 
   if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
+    clearBtn.addEventListener('click', async () => {
       if (confirm('Tem certeza que deseja limpar todos os logs?')) {
-        clearLogs();
+        await clearLogs();
       }
     });
   }
@@ -201,25 +292,15 @@
     exportBtn.addEventListener('click', exportLogs);
   }
 
-  // Listener para logs vindos do sistema
-  window.addEventListener('message', (e) => {
-    if (e?.data?.type === 'LOG_MESSAGE') {
-      const { message = '', level = 'INFO', source = 'CORE' } = e.data.data || {};
-      addLog(level, source, message);
-    }
-  });
-
   // Inicialização
-  updateStatistics();
+  connectToLogSystem();
   
-  // Limpar placeholder inicial e configurar estado vazio
-  if (container) {
-    container.innerHTML = `
-      <div style="color: #64748b; text-align: center; padding: 20px; font-style: italic;">
-        Sistema de logs inicializado - aguardando registros
-      </div>
-    `;
-  }
+  // Log de inicialização
+  setTimeout(() => {
+    if (window.LogSystem) {
+      window.LogSystem.addLog('Página de logs carregada e conectada ao LogSystem', 'INFO', 'LOGS');
+    }
+  }, 100);
 })();
 
 

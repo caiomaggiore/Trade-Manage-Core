@@ -46,6 +46,16 @@
             </div>
           </div>
           
+          <div class="stat-card warning">
+            <div class="stat-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Alertas</span>
+              <span class="stat-value" id="warning-count">0</span>
+            </div>
+          </div>
+          
           <div class="stat-card success">
             <div class="stat-icon">
               <i class="fas fa-check-circle"></i>
@@ -73,7 +83,7 @@
         </h4>
         
         <div class="form">
-          <div class="form-row">
+          <div class="form-row filter-row">
             <label for="log-level-filter" class="form-label">Nível de Log:</label>
             <select id="log-level-filter" class="input">
               <option value="ALL">Todos os Níveis</option>
@@ -83,6 +93,7 @@
               <option value="ERROR">Error</option>
               <option value="SUCCESS">Success</option>
             </select>
+            <span id="filter-count" class="filter-count">0 logs</span>
           </div>
         </div>
       </div>

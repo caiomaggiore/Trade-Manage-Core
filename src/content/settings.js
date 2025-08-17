@@ -65,10 +65,17 @@
     }
 
     // Carregar configurações existentes
-    const cfg = await window.StateManager.load();
-    if (valueEl) valueEl.value = cfg.value || 10;
-    if (timeEl) timeEl.value = cfg.period || 0;
-    if (payoutEl) payoutEl.value = cfg.minPayout || 80;
+    try {
+      const cfg = await window.StateManager.load();
+      if (valueEl) valueEl.value = cfg.value || 10;
+      if (timeEl) timeEl.value = cfg.period || 0;
+      if (payoutEl) payoutEl.value = cfg.minPayout || 80;
+      
+      window.logToSystem?.(`Configurações carregadas: valor=${cfg.value}, período=${cfg.period}, payout=${cfg.minPayout}`, 'INFO', 'SETTINGS');
+    } catch (error) {
+      window.logToSystem?.(`Erro crítico ao carregar configurações: ${error.message}`, 'ERROR', 'SETTINGS');
+      window.sendStatus?.('Erro ao carregar configurações', 'error', 3000);
+    }
 
     // Carregar informações do sistema
     await loadSystemInfo();
@@ -108,31 +115,26 @@
           // Feedback para o usuário
           window.sendStatus('Configurações salvas com sucesso!', 'success', 3000);
           
-          // Log da ação
-          const timestamp = new Date().toLocaleString('pt-BR');
-          logToSystem(`Configurações atualizadas: ${JSON.stringify(newConfig)} em ${timestamp}`, 'SUCCESS', 'SETTINGS');
+          // Log da ação crítica do usuário
+          window.logToSystem?.(`Usuário salvou configurações: valor=${newConfig.value}, período=${newConfig.period}, payout=${newConfig.minPayout}`, 'SUCCESS', 'SETTINGS');
 
         } catch (e) {
           window.sendStatus(`Erro ao salvar: ${e.message}`, 'error', 5000);
-          logToSystem(`Erro ao salvar configurações: ${e.message}`, 'ERROR', 'SETTINGS');
+          window.logToSystem?.(`Erro crítico ao salvar configurações: ${e.message}`, 'ERROR', 'SETTINGS');
         }
       };
     }
 
-    // Fechar página
+    // Fechar página (sem log - ação visível ao usuário)
     if (closeBtn) {
       closeBtn.onclick = () => {
-        logToSystem('Página de configurações fechada', 'INFO', 'SETTINGS');
         window.parent?.postMessage({ type: 'NAV_CLOSE_SUBPAGE' }, '*');
       };
     }
 
-    // Log de inicialização
-    logToSystem('Página de configurações carregada', 'INFO', 'SETTINGS');
-
   } catch (e) {
     console.error('Erro em settings.js:', e);
-    logToSystem(`Erro ao carregar settings: ${e.message}`, 'ERROR', 'SETTINGS');
+    window.logToSystem?.(`Erro crítico na inicialização da página de configurações: ${e.message}`, 'ERROR', 'SETTINGS');
   }
 })();
 

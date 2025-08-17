@@ -11,7 +11,11 @@
     const statusText = footerStatus?.querySelector('.status-text');
     const statusIcon = footerStatus?.querySelector('.status-icon');
     
-    if (!footerStatus || !statusText || !statusIcon) return;
+    if (!footerStatus || !statusText || !statusIcon) {
+      // Apenas log crítico quando elementos essenciais da UI não são encontrados
+      window.logToSystem?.('Elementos críticos do footer de status não encontrados', 'ERROR', 'INDEX');
+      return;
+    }
     
     // Limpa timeout anterior
     if (statusTimeout) clearTimeout(statusTimeout);
@@ -55,13 +59,21 @@
     // Exibe versão do manifest no footer
     try {
       const vEl = versionEl();
-      if (vEl) vEl.textContent = chrome.runtime.getManifest?.().version || '-';
-    } catch(_) {}
+      if (vEl) {
+        const version = chrome.runtime.getManifest?.().version || '-';
+        vEl.textContent = version;
+        window.logToSystem?.(`Interface inicializada - versão ${version}`, 'INFO', 'INDEX');
+      } else {
+        window.logToSystem?.('Elemento de versão não encontrado na UI', 'WARN', 'INDEX');
+      }
+    } catch(error) {
+      window.logToSystem?.(`Erro ao obter versão do manifest: ${error.message}`, 'ERROR', 'INDEX');
+    }
     
     // Simula carregamento do sistema e mostra "Sistema Pronto" quando tudo estiver carregado
     setTimeout(() => {
       const currentTime = new Date().toLocaleString('pt-BR');
-      logToSystem(`Sistema inicializado com sucesso em ${currentTime}`, 'SUCCESS', 'SYSTEM');
+      window.logToSystem?.(`Sistema inicializado com sucesso em ${currentTime}`, 'SUCCESS', 'INDEX');
       updateFooterStatus('Sistema Pronto', 'success', 0, 'fas fa-check-circle');
     }, 1500); // 1.5s para simular carregamento
   }
@@ -83,8 +95,11 @@
     if (btnCapture) btnCapture.addEventListener('click', async () => {
       try {
         sendStatus('Capturando tela...', 'info', 0, 'fas fa-camera', true);
+        window.logToSystem?.('Usuário iniciou captura de tela', 'INFO', 'CAPTURE');
+        
         const img = await window.CaptureScreen.capture();
         sendStatus('Captura concluída com sucesso!', 'success', 3000, 'fas fa-check-circle');
+        window.logToSystem?.('Captura de tela realizada com sucesso', 'SUCCESS', 'CAPTURE');
         
         const popup = window.open('', '_blank', 'width=720,height=520');
         if (popup && popup.document) {
@@ -102,21 +117,45 @@
           image.style.borderRadius = '8px';
           image.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5)';
           popup.document.body.appendChild(image);
+          
+          window.logToSystem?.('Popup de captura aberto com sucesso', 'INFO', 'CAPTURE');
+        } else {
+          window.logToSystem?.('Falha ao abrir popup - possivelmente bloqueado pelo navegador', 'WARN', 'CAPTURE');
+          sendStatus('Captura realizada, mas popup foi bloqueado', 'warning', 4000, 'fas fa-exclamation-triangle');
         }
       } catch (e) { 
-        sendStatus(`Erro na captura: ${e.message}`, 'error', 5000, 'fas fa-exclamation-circle'); 
+        sendStatus(`Erro na captura: ${e.message}`, 'error', 5000, 'fas fa-exclamation-circle');
+        window.logToSystem?.(`Erro na captura de tela: ${e.message}`, 'ERROR', 'CAPTURE');
       }
     });
     if (btnAnalyze) btnAnalyze.addEventListener('click', async () => {
       sendStatus('🧠 Iniciando análise inteligente...', 'info', 0, 'fas fa-brain', true);
+      window.logToSystem?.('Usuário iniciou análise inteligente', 'INFO', 'ANALYZE');
+      
       // Placeholder para orquestração futura
       setTimeout(() => {
         sendStatus('Análise concluída com sucesso!', 'success', 3000, 'fas fa-check-circle');
+        window.logToSystem?.('Análise inteligente simulada concluída', 'SUCCESS', 'ANALYZE');
       }, 2000);
     });
 
-    if (btnSettings) btnSettings.addEventListener('click', () => window.TMCNavigation?.openSettings());
-    if (btnLogs) btnLogs.addEventListener('click', () => window.TMCNavigation?.openLogs());
+    if (btnSettings) btnSettings.addEventListener('click', () => {
+      if (window.TMCNavigation?.openSettings) {
+        window.TMCNavigation.openSettings();
+      } else {
+        window.logToSystem?.('Sistema de navegação não encontrado para abrir configurações', 'ERROR', 'NAVIGATION');
+        sendStatus('Erro: sistema de navegação não disponível', 'error', 3000);
+      }
+    });
+    
+    if (btnLogs) btnLogs.addEventListener('click', () => {
+      if (window.TMCNavigation?.openLogs) {
+        window.TMCNavigation.openLogs();
+      } else {
+        window.logToSystem?.('Sistema de navegação não encontrado para abrir logs', 'ERROR', 'NAVIGATION');
+        sendStatus('Erro: sistema de navegação não disponível', 'error', 3000);
+      }
+    });
 
     // Painel Dev - Apenas teste de payout
     const testPayoutBtn = document.getElementById('testPayoutBtn');

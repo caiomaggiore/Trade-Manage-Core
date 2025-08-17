@@ -521,9 +521,15 @@ body.subpage.trade-manager-core {
 
 .form-row {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   align-items: center;
   gap: 10px;
+}
+
+/* Forma especial para filtros de logs com 3 elementos */
+.form-row.filter-row {
+  grid-template-columns: 110px 1fr 80px;
+  gap: 8px;
 }
 
 .form-label {
@@ -558,6 +564,27 @@ body.subpage.trade-manager-core {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 16px;
+}
+
+/* ================== FILTRO DE LOGS ================== */
+.filter-container {
+  /* Removido - usando grid do form-row */
+}
+
+.filter-count {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--primary);
+  background: linear-gradient(135deg, #f0f4ff 0%, #e3f2fd 100%);
+  border: 1px solid #bbdefb;
+  border-radius: 12px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  align-self: center;
+  justify-self: center;
 }
 
 /* ================== FOOTER ================== */
@@ -723,6 +750,11 @@ body.subpage.trade-manager-core {
   background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
 }
 
+.stat-card.warning {
+  border-color: #ffc107;
+  background: linear-gradient(135deg, #fffbf0 0%, #fff3cd 100%);
+}
+
 .stat-card.success {
   border-color: #28a745;
   background: linear-gradient(135deg, #f8fff9 0%, #e6ffe8 100%);
@@ -743,6 +775,10 @@ body.subpage.trade-manager-core {
 
 .stat-card.error .stat-icon {
   background: #dc3545;
+}
+
+.stat-card.warning .stat-icon {
+  background: #ffc107;
 }
 
 .stat-card.success .stat-icon {
@@ -775,6 +811,10 @@ body.subpage.trade-manager-core {
 
 .stat-card.error .stat-value {
   color: #dc3545;
+}
+
+.stat-card.warning .stat-value {
+  color: #e67e22;
 }
 
 .stat-card.success .stat-value {

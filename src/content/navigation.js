@@ -7,7 +7,13 @@
   function ensureElements(){
     const overlay = getOverlay();
     const content = getContent();
-    return !!overlay && !!content;
+    const hasElements = !!overlay && !!content;
+    
+    if (!hasElements) {
+      window.logToSystem?.('Elementos críticos de navegação não encontrados na DOM', 'ERROR', 'NAVIGATION');
+    }
+    
+    return hasElements;
   }
 
   const NAV = {
@@ -39,7 +45,8 @@
         
         return true;
       } catch (error) {
-        logToSystem(`Erro ao carregar ${path}: ${error.message}`, 'ERROR', 'NAVIGATION');
+        window.logToSystem?.(`Falha crítica ao carregar página ${path}: ${error.message}`, 'ERROR', 'NAVIGATION');
+        sendStatus(`Erro ao carregar página: ${error.message}`, 'error', 5000);
         return false;
       }
     },
