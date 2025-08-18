@@ -17,79 +17,231 @@
 
   <!-- Conteúdo Principal -->
   <div class="content">
-    <!-- Painel de Parâmetros -->
+
+    <!-- Configurações de Trading -->
     <div class="main-panel">
       <div class="main-panel-header">
-        <h3><i class="fas fa-cogs"></i> PARÂMETROS DE OPERAÇÃO</h3>
-        <p class="main-panel-description">Configure os parâmetros básicos para as operações de trading</p>
+        <h3><i class="fas fa-chart-line"></i> CONFIGURAÇÕES DE TRADING</h3>
+        <p class="main-panel-description">Parâmetros principais para controle de risco e operações</p>
       </div>
 
-      <!-- Formulário de Configurações -->
-      <div class="sub-panel">
-        <h4 class="sub-panel-header">
-          <i class="fas fa-sliders-h"></i> Configurações Básicas
-        </h4>
-        
-        <div class="form">
-          <div class="form-row">
-            <label for="trade-value" class="form-label">Valor (R$):</label>
-            <input id="trade-value" class="input" type="number" min="1" step="0.01" placeholder="10.00">
-          </div>
+      <!-- Grade de 2 Colunas -->
+      <div class="panel-grid-2">
+        <!-- Coluna 1: Controle de Risco -->
+        <div class="sub-panel">
+          <h4 class="sub-panel-header">
+            <i class="fas fa-shield-alt"></i> Controle de<br>Risco
+          </h4>
           
-          <div class="form-row">
-            <label for="trade-time" class="form-label">Período (min):</label>
-            <input id="trade-time" class="input" type="number" min="1" max="60" placeholder="5">
+          <!-- Toggle Gale -->
+          <div class="toggle-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-gale" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Gale Ativo</span>
           </div>
-          
-          <div class="form-row">
-            <label for="min-payout" class="form-label">Payout Mínimo (%):</label>
-            <input id="min-payout" class="input" type="number" min="50" max="100" value="80" placeholder="80">
+
+          <div class="settings-form">
+            <div class="form-row">
+              <label for="gale-profit" class="form-label">Lucro de Gale (%):</label>
+              <select id="gale-profit" class="input">
+                <option value="0">0% (Sem Lucro)</option>
+                <option value="5">5%</option>
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20" selected>20%</option>
+                <option value="25">25%</option>
+                <option value="30">30%</option>
+                <option value="40">40%</option>
+                <option value="50">50%</option>
+              </select>
+            </div>
+            
+            <div class="form-row">
+              <label for="daily-profit" class="form-label">Lucro Diário (R$):</label>
+              <input id="daily-profit" class="input" type="number" min="0" step="0.01" placeholder="0.00">
+            </div>
+            
+            <div class="form-row">
+              <label for="stop-loss" class="form-label">Stop Loss (R$):</label>
+              <input id="stop-loss" class="input" type="number" min="0" step="0.01" placeholder="0.00">
+            </div>
           </div>
         </div>
 
-        <div class="actions-right">
-          <button id="save-settings" class="btn primary md">
-            <i class="fas fa-save"></i>
-            <span>Salvar Configurações</span>
-          </button>
+        <!-- Coluna 2: Parâmetros de Operação -->
+        <div class="sub-panel">
+          <h4 class="sub-panel-header">
+            <i class="fas fa-cogs"></i> Parâmetros de<br>Operação
+          </h4>
+          
+          <!-- Toggle Automação -->
+          <div class="toggle-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-automation">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Automação</span>
+          </div>
+
+          <div class="settings-form">
+            <div class="form-row">
+              <label for="trade-value" class="form-label">Valor (R$):</label>
+              <input id="trade-value" class="input" type="number" min="1" step="0.01" placeholder="10.00">
+            </div>
+            
+            <div class="form-row">
+              <label for="trade-time" class="form-label">Período (min):</label>
+              <input id="trade-time" class="input" type="number" min="1" max="60" placeholder="5">
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Painel de Informações -->
-    <div class="main-panel" style="margin-bottom: 100px;">
+    <!-- Configurações de Payout -->
+    <div class="main-panel">
       <div class="main-panel-header">
-        <h3><i class="fas fa-info-circle"></i> INFORMAÇÕES</h3>
-        <p class="main-panel-description">Informações importantes sobre as configurações</p>
+        <h3><i class="fas fa-percentage"></i> CONFIGURAÇÕES DE PAYOUT</h3>
+        <p class="main-panel-description">Controle de payout mínimo e comportamento do sistema</p>
       </div>
 
       <div class="sub-panel">
-        <div class="panel-item">
-          <span class="panel-item-label">Versão:</span>
-          <div class="panel-item-value">
-            <span id="settings-version">-</span>
+        <h4 class="sub-panel-header">
+          <i class="fas fa-chart-bar"></i> Controle de Payout
+        </h4>
+        
+        <div class="settings-form">
+          <div class="form-row">
+            <label for="min-payout" class="form-label">Payout Mínimo (%):</label>
+            <select id="min-payout" class="input">
+              <option value="50">50%</option>
+              <option value="55">55%</option>
+              <option value="60">60%</option>
+              <option value="65">65%</option>
+              <option value="70">70%</option>
+              <option value="75">75%</option>
+              <option value="80" selected>80%</option>
+              <option value="85">85%</option>
+              <option value="90">90%</option>
+            </select>
+          </div>
+          
+          <div class="form-row">
+            <label for="payout-behavior" class="form-label">Ação Payout Baixo:</label>
+            <select id="payout-behavior" class="input">
+              <option value="wait" selected>Esperar Payout Adequado</option>
+              <option value="switch">Trocar de Ativo</option>
+              <option value="cancel">Cancelar Operação</option>
+            </select>
+          </div>
+
+          <!-- Campos Condicionais -->
+          <div id="payout-timeout-container" class="form-row conditional-field" style="display: none;">
+            <label for="payout-timeout" class="form-label">Intervalo Verificação (seg):</label>
+            <input id="payout-timeout" class="input" type="number" min="1" max="60" value="5" placeholder="5">
+          </div>
+
+          <div id="asset-switching-container" class="form-row conditional-field" style="display: none;">
+            <label for="asset-category" class="form-label">Categoria Preferida:</label>
+            <select id="asset-category" class="input">
+              <option value="crypto" selected>Criptomoedas</option>
+              <option value="currency">Moedas</option>
+              <option value="commodity">Commodities</option>
+              <option value="stock">Ações</option>
+              <option value="index">Índices</option>
+            </select>
           </div>
         </div>
-        <div class="panel-item">
-          <span class="panel-item-label">Última Atualização:</span>
-          <div class="panel-item-value">
-            <span id="last-update">Nunca</span>
+      </div>
+    </div>
+
+    <!-- Configurações Avançadas -->
+    <div class="main-panel">
+      <div class="main-panel-header">
+        <h3><i class="fas fa-tools"></i> CONFIGURAÇÕES AVANÇADAS</h3>
+        <p class="main-panel-description">Opções para desenvolvedores e testes do sistema</p>
+      </div>
+
+      <div class="sub-panel">
+        <h4 class="sub-panel-header">
+          <i class="fas fa-flask"></i> Modos de Teste e Desenvolvimento
+        </h4>
+        
+        <!-- Toggle Modo Teste -->
+        <div class="toggle-control">
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-test-mode">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">Modo Teste de Análise</span>
+        </div>
+        <div class="setting-description">
+          <p>Quando ativado, o sistema usará um algoritmo de análise simplificado que produz resultados mais diretos, mas potencialmente menos precisos.</p>
+          <p class="warning-text">
+            <strong>Atenção:</strong> Este modo é para testes e desenvolvimento. Os resultados podem não ser confiáveis para operações reais.
+          </p>
+        </div>
+
+        <!-- Toggle Modo Desenvolvedor -->
+        <div class="toggle-control" style="margin-top: 20px;">
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-dev-mode">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">Modo Desenvolvedor</span>
+        </div>
+        <div class="setting-description">
+          <p>Quando ativado, exibe ferramentas e controles especiais para desenvolvedores, como o painel de testes do sistema de Gale.</p>
+          <p class="info-text">
+            <strong>Nota:</strong> Esta configuração destina-se apenas a desenvolvedores e não afeta o funcionamento normal do sistema.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações do Sistema -->
+    <div class="main-panel">
+      <div class="main-panel-header">
+        <h3><i class="fas fa-info-circle"></i> INFORMAÇÕES DO SISTEMA</h3>
+        <p class="main-panel-description">Informações sobre versão e estado das configurações</p>
+      </div>
+
+      <div class="sub-panel">
+        <div class="settings-form">
+          <div class="form-row">
+            <label class="form-label">Versão:</label>
+            <span id="settings-version" class="info-value">-</span>
+          </div>
+          
+          <div class="form-row">
+            <label class="form-label">Última Atualização:</label>
+            <span id="last-update" class="info-value">-</span>
+          </div>
+          
+          <div class="form-row">
+            <label class="form-label">Status:</label>
+            <span id="config-status" class="status-badge status-warning">Não Configurado</span>
           </div>
         </div>
-        <div class="panel-item">
-          <span class="panel-item-label">Status:</span>
-          <div class="panel-item-value">
-            <span id="config-status" class="status-info">Configurado</span>
-          </div>
-        </div>
+      </div>
+    </div>
+
+    <!-- Painel de Ações (com margem inferior) -->
+    <div class="main-panel" style="margin-bottom: 120px;">
+      <div class="actions-center">
+        <button id="save-settings" class="btn primary md">
+          <i class="fas fa-save"></i>
+          <span>Salvar Configurações</span>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Scripts -->
-  <script src="../content/log-sys.js"></script>
   <script src="../content/state-manager.js"></script>
-  <script src="../content/navigation.js"></script>
+  <script src="../content/log-sys.js"></script>
   <script src="../content/settings.js"></script>
 </body>
 </html>

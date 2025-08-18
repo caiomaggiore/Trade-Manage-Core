@@ -1,7 +1,7 @@
 ﻿{
   "manifest_version": 3,
   "name": "Trade Manager Core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Core enxuto com UI via iframe, logging, settings e painel de desenvolvimento.",
   "permissions": [
     "storage",
@@ -9,7 +9,6 @@
     "activeTab",
     "scripting",
     "notifications",
-    "offscreen",
     "commands",
     "clipboardWrite"
   ],

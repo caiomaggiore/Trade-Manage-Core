@@ -7,6 +7,7 @@
   const closeBtn = document.getElementById('close-logs');
   const container = document.getElementById('log-container');
   const filterSelect = document.getElementById('log-level-filter');
+  const copyBtn = document.getElementById('copy-logs');
   const clearBtn = document.getElementById('clear-logs');
   const exportBtn = document.getElementById('export-logs');
   
@@ -222,6 +223,94 @@
     window.logToSystem?.(`${count} logs removidos pelo usuário`, 'INFO', 'LOGS-VIEWER');
   }
 
+  // Função para copiar logs para área de transferência
+  async function copyLogs() {
+    if (!window.LogSystem) {
+      window.logToSystem?.('Tentativa de cópia falhou - LogSystem não disponível', 'ERROR', 'LOGS-VIEWER');
+      return;
+    }
+
+    const allLogs = window.LogSystem.getLogs();
+    if (allLogs.length === 0) {
+      window.logToSystem?.('Tentativa de cópia cancelada - nenhum log disponível', 'WARN', 'LOGS-VIEWER');
+      return;
+    }
+
+    try {
+      window.logToSystem?.('Usuário solicitou cópia de logs para área de transferência', 'INFO', 'LOGS-VIEWER');
+      
+      // Formatação idêntica ao que o usuário está vendo nos logs
+      let content = '';
+      allLogs.forEach(log => {
+        const timestamp = log.timestampFormatted || new Date().toLocaleString('pt-BR');
+        content += `[${timestamp}]\n${log.level}\n${log.source}\n${log.message}\n`;
+      });
+
+      // Usar método funcional: document.execCommand
+      let success = false;
+      let method = 'execCommand';
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = content;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        
+        success = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        if (success) {
+          window.logToSystem?.('Cópia bem-sucedida via execCommand', 'DEBUG', 'LOGS-VIEWER');
+        } else {
+          throw new Error('execCommand retornou false');
+        }
+      } catch (execError) {
+        window.logToSystem?.(`Erro na cópia: ${execError.message}`, 'ERROR', 'LOGS-VIEWER');
+        throw new Error(`Falha ao copiar: ${execError.message}`);
+      }
+
+      if (success) {
+        // Feedback visual no botão
+        if (copyBtn) {
+          const originalHTML = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<i class="fas fa-check"></i><span>Copiado!</span>';
+          copyBtn.style.backgroundColor = '#4CAF50';
+          
+          setTimeout(() => {
+            copyBtn.innerHTML = originalHTML;
+            copyBtn.style.backgroundColor = '';
+          }, 2000);
+        }
+
+        window.logToSystem?.(`Logs copiados com sucesso via ${method.toUpperCase()} (${allLogs.length} registros)`, 'SUCCESS', 'LOGS-VIEWER');
+      }
+
+    } catch (error) {
+      window.logToSystem?.(`Erro ao copiar logs: ${error.message}`, 'ERROR', 'LOGS-VIEWER');
+      
+      // Feedback de erro no botão
+      if (copyBtn) {
+        const originalHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-times"></i><span>Erro!</span>';
+        copyBtn.style.backgroundColor = '#f44336';
+        
+        setTimeout(() => {
+          copyBtn.innerHTML = originalHTML;
+          copyBtn.style.backgroundColor = '';
+        }, 2000);
+      }
+
+      // Oferecer download como alternativa
+      setTimeout(() => {
+        window.logToSystem?.('Tente usar o botão "Exportar" como alternativa', 'INFO', 'LOGS-VIEWER');
+      }, 2000);
+    }
+  }
+
   // Função para exportar logs - ação do usuário
   function exportLogs() {
     if (!window.LogSystem) {
@@ -278,6 +367,10 @@
       filterLogs();
       updateFilterCount();
     });
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', copyLogs);
   }
 
   if (clearBtn) {

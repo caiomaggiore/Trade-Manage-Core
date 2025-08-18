@@ -43,8 +43,8 @@ body.trade-manager-core {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border: 2px solid #dee2e6;
   border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
+  padding: 8px;
+  margin: 8px 0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   max-width: 100%;
   overflow-x: hidden;
@@ -53,8 +53,8 @@ body.trade-manager-core {
 
 .main-panel-header {
   text-align: center;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
   border-bottom: 2px solid #dee2e6;
 }
 
@@ -86,10 +86,10 @@ body.trade-manager-core {
 }
 
 .sub-panel {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   background: var(--panel);
   border-radius: 8px;
-  padding: 12px;
+  padding: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   border: 1px solid var(--border);
   max-width: 100%;
@@ -98,17 +98,17 @@ body.trade-manager-core {
 }
 
 .sub-panel-header {
-  margin: 0 0 10px 0;
+  margin: 0 0 6px 0;
   color: #495057;
   font-size: 14px;
   font-weight: 600;
-  padding-bottom: 7px;
+  padding-bottom: 4px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 6px;
   font-family: 'Montserrat', sans-serif;
-  min-height: 40px;
+  min-height: 32px;
   text-transform: uppercase;
 }
 
@@ -159,6 +159,210 @@ body.trade-manager-core {
   max-width: 464px;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+/* ================== ESTILOS PARA SETTINGS ================== */
+
+/* Panel Grid 2 Colunas */
+.panel-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Formulários de Settings Otimizados */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.settings-form .form-label {
+  font-weight: 400;
+  color: var(--text-primary);
+  font-size: 12px;
+  text-transform: none;
+  line-height: 1.2;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.settings-form .input,
+.settings-form .input select {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Garantir larguras iguais para todos os inputs/selects */
+.settings-form select,
+.settings-form input[type="text"],
+.settings-form input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Toggle Controls */
+.toggle-control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s ease;
+  border-radius: 24px;
+  border: 1px solid #ddd;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: 0.3s ease;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+  background-color: #fff;
+}
+
+.toggle-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* Info Values */
+.info-value {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.status-success {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.status-badge.status-warning {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: #e67e22;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-badge.status-error {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+/* Campos Condicionais */
+.conditional-field {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.conditional-field.hidden {
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+}
+
+/* Garantir que campos condicionais tenham mesma largura que outros campos */
+.conditional-field .input,
+.conditional-field select {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Actions Center */
+.actions-center {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+/* Descrições de Configurações */
+.setting-description {
+  margin-top: 8px;
+  margin-left: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.setting-description p {
+  margin: 6px 0;
+}
+
+.setting-description .warning-text {
+  color: #e67e22;
+  background-color: rgba(255, 193, 7, 0.1);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 4px solid #ffc107;
+  margin: 8px 0;
+}
+
+.setting-description .info-text {
+  color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 4px solid #007bff;
+  margin: 8px 0;
 }
 
 /* ================== BOTÕES PADRONIZADOS ================== */
@@ -564,6 +768,35 @@ body.subpage.trade-manager-core {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 16px;
+}
+
+/* Ações dos Logs - Centralizadas e Uniformes */
+.log-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.log-action-btn {
+  flex: 1;
+  max-width: 120px;
+  min-width: 100px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.log-action-btn i {
+  font-size: 14px;
+}
+
+.log-action-btn span {
+  font-size: 12px;
+  font-weight: 500;
 }
 
 /* ================== FILTRO DE LOGS ================== */

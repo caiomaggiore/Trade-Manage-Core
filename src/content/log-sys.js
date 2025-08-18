@@ -348,10 +348,48 @@
 
     async clearLogs() {
       const count = this.logs.length;
+      
+      // Limpar array em memória
       this.logs = [];
-      await this.persistLogs();
+      
+      // Limpar storage específicamente usando remove para garantir limpeza
+      if (chrome?.storage?.local) {
+        try {
+          await chrome.storage.local.remove([this.storageKey]);
+          console.log(`✅ Storage limpo: chave '${this.storageKey}' removida`);
+          
+          // Definir como array vazio para garantir
+          await chrome.storage.local.set({ [this.storageKey]: [] });
+          console.log(`✅ Storage redefinido como array vazio`);
+        } catch (error) {
+          console.warn('⚠️ Erro ao limpar storage:', error);
+        }
+      }
+      
+      // Notificar listeners sobre a limpeza
       this.notifyListeners();
-      this.addLog(`Logs limpos pelo usuário (${count} registros removidos)`, 'INFO', 'LOG-SYSTEM');
+      
+      // Adicionar log de limpeza APENAS em memória (não persistir automaticamente)
+      const clearLog = {
+        id: this.generateId(),
+        message: `Logs limpos pelo usuário (${count} registros removidos)`,
+        level: 'INFO',
+        source: 'LOG-SYSTEM',
+        timestampFormatted: this.formatTimestamp(new Date())
+      };
+      
+      this.logs.push(clearLog);
+      
+      // Persistir apenas este único log de limpeza
+      if (chrome?.storage?.local) {
+        try {
+          await chrome.storage.local.set({ [this.storageKey]: [clearLog] });
+          console.log(`✅ Log de limpeza salvo`);
+        } catch (error) {
+          console.warn('⚠️ Erro ao salvar log de limpeza:', error);
+        }
+      }
+      
       return count;
     }
 
