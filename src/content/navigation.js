@@ -70,7 +70,6 @@
         const pageIcon = path.includes('settings') ? 'fas fa-cog' : 
                         path.includes('logs') ? 'fas fa-list' : 'fas fa-file';
         
-        logToSystem(`Navegando para: ${pageName}`, 'INFO', 'NAVIGATION');
         sendStatus(`Carregando ${pageName}...`, 'info', 2000, pageIcon);
       }
     },
@@ -88,7 +87,6 @@
           if (content) content.innerHTML = '';
         }, 300); // Aguarda animação completar
         
-        logToSystem('Fechando subpágina', 'INFO', 'NAVIGATION');
         sendStatus('Voltando ao painel principal...', 'info', 1500, 'fas fa-home');
       }
     },
@@ -131,6 +129,5 @@
   // Expõe API global
   window.TMCNavigation = NAV;
   
-  // Log de inicialização
-  logToSystem('Sistema de navegação SPA inicializado', 'INFO', 'NAVIGATION');
+  // Sistema inicializado (sem log - ação visível para o usuário)
 })();

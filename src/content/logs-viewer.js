@@ -208,6 +208,21 @@
     updateFilterCount();
   }
 
+  // Função para obter logs filtrados baseado no filtro atual
+  function getFilteredLogs(logs) {
+    if (currentFilter === 'ALL') {
+      return logs;
+    }
+    
+    // Normalizar filtro (WARN -> WARNING)
+    const normalizedFilter = currentFilter === 'WARN' ? 'WARNING' : currentFilter;
+    
+    return logs.filter(log => {
+      const logLevel = (log.level || '').toUpperCase();
+      return logLevel === normalizedFilter;
+    });
+  }
+
   // Função para limpar logs - ação crítica do usuário
   async function clearLogs() {
     if (!window.LogSystem) {
@@ -239,11 +254,23 @@
     try {
       window.logToSystem?.('Usuário solicitou cópia de logs para área de transferência', 'INFO', 'LOGS-VIEWER');
       
-      // Formatação idêntica ao que o usuário está vendo nos logs
+      // Filtrar logs baseado no filtro atual
+      const filteredLogs = getFilteredLogs(allLogs);
+      
+      if (filteredLogs.length === 0) {
+        window.logToSystem?.('Nenhum log corresponde ao filtro atual', 'WARN', 'LOGS-VIEWER');
+        return;
+      }
+      
+      // Novo padrão de formatação mais organizado
       let content = '';
-      allLogs.forEach(log => {
-        const timestamp = log.timestampFormatted || new Date().toLocaleString('pt-BR');
-        content += `[${timestamp}]\n${log.level}\n${log.source}\n${log.message}\n`;
+      filteredLogs.forEach(log => {
+        let timestamp = log.timestampFormatted || new Date().toLocaleString('pt-BR');
+        // Remover colchetes extras se existirem (timestampFormatted já vem com colchetes)
+        if (timestamp.startsWith('[') && timestamp.endsWith(']')) {
+          timestamp = timestamp.slice(1, -1);
+        }
+        content += `--\n[${timestamp}] - ${log.level} - ${log.source} -\n${log.message}\n`;
       });
 
       // Usar método funcional: document.execCommand
@@ -286,7 +313,7 @@
           }, 2000);
         }
 
-        window.logToSystem?.(`Logs copiados com sucesso via ${method.toUpperCase()} (${allLogs.length} registros)`, 'SUCCESS', 'LOGS-VIEWER');
+        window.logToSystem?.(`Logs copiados com sucesso via ${method.toUpperCase()} (${filteredLogs.length} registros)`, 'SUCCESS', 'LOGS-VIEWER');
       }
 
     } catch (error) {
@@ -329,7 +356,30 @@
     try {
       window.logToSystem?.('Usuário solicitou exportação de logs', 'INFO', 'LOGS-VIEWER');
       
-      const { content, filename } = window.LogSystem.exportLogs('txt');
+      // Filtrar logs baseado no filtro atual
+      const filteredLogs = getFilteredLogs(allLogs);
+      
+      if (filteredLogs.length === 0) {
+        window.logToSystem?.('Nenhum log corresponde ao filtro atual para exportação', 'WARN', 'LOGS-VIEWER');
+        alert('Nenhum log corresponde ao filtro atual');
+        return;
+      }
+      
+      // Gerar conteúdo com novo padrão de formatação
+      let content = '';
+      filteredLogs.forEach(log => {
+        let timestamp = log.timestampFormatted || new Date().toLocaleString('pt-BR');
+        // Remover colchetes extras se existirem (timestampFormatted já vem com colchetes)
+        if (timestamp.startsWith('[') && timestamp.endsWith(']')) {
+          timestamp = timestamp.slice(1, -1);
+        }
+        content += `--\n[${timestamp}] - ${log.level} - ${log.source} -\n${log.message}\n`;
+      });
+      
+      // Gerar nome do arquivo com informação do filtro
+      const exportTimestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const filterSuffix = currentFilter === 'ALL' ? 'todos' : currentFilter.toLowerCase();
+      const filename = `trade-manager-logs-${filterSuffix}-${exportTimestamp}.txt`;
       
       const blob = new Blob([content], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -341,7 +391,7 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      window.logToSystem?.(`Logs exportados com sucesso: ${filename} (${allLogs.length} registros)`, 'SUCCESS', 'LOGS-VIEWER');
+      window.logToSystem?.(`Logs exportados com sucesso: ${filename} (${filteredLogs.length} registros)`, 'SUCCESS', 'LOGS-VIEWER');
     } catch (error) {
       window.logToSystem?.(`Erro na exportação de logs: ${error.message}`, 'ERROR', 'LOGS-VIEWER');
     }
@@ -350,9 +400,6 @@
   // Event Listeners
   if (closeBtn) {
     closeBtn.onclick = () => {
-      if (window.LogSystem) {
-        window.LogSystem.addLog('Página de logs fechada', 'INFO', 'LOGS');
-      }
       // Remover listener ao fechar
       if (logSystemListener) {
         logSystemListener();
@@ -385,15 +432,41 @@
     exportBtn.addEventListener('click', exportLogs);
   }
 
+  // Função para simular seleção do filtro via clique nas estatísticas
+  function simulateFilterSelection(level) {
+    if (filterSelect) {
+      filterSelect.value = level;
+      // Disparar evento change para usar a função existente
+      const event = new Event('change', { bubbles: true });
+      filterSelect.dispatchEvent(event);
+    }
+  }
+
+  // Event Listeners para estatísticas clicáveis
+  if (totalLogsEl) {
+    totalLogsEl.parentElement.parentElement.style.cursor = 'pointer';
+    totalLogsEl.parentElement.parentElement.onclick = () => simulateFilterSelection('ALL');
+  }
+
+  if (errorCountEl) {
+    errorCountEl.parentElement.parentElement.style.cursor = 'pointer';
+    errorCountEl.parentElement.parentElement.onclick = () => simulateFilterSelection('ERROR');
+  }
+  
+  if (warningCountEl) {
+    warningCountEl.parentElement.parentElement.style.cursor = 'pointer';
+    warningCountEl.parentElement.parentElement.onclick = () => simulateFilterSelection('WARN');
+  }
+  
+  if (successCountEl) {
+    successCountEl.parentElement.parentElement.style.cursor = 'pointer';
+    successCountEl.parentElement.parentElement.onclick = () => simulateFilterSelection('SUCCESS');
+  }
+
   // Inicialização
   connectToLogSystem();
   
-  // Log de inicialização
-  setTimeout(() => {
-    if (window.LogSystem) {
-      window.LogSystem.addLog('Página de logs carregada e conectada ao LogSystem', 'INFO', 'LOGS');
-    }
-  }, 100);
+  // Sistema inicializado (sem log - ação visível para o usuário)
 })();
 
 
